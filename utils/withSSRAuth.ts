@@ -5,7 +5,8 @@ import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next";
-import { parseCookies } from "nookies";
+import { destroyCookie, parseCookies } from "nookies";
+import { AuthTokenError } from "../services/errors/AuthTokenError";
 
 export function withSSRAuth<P>(fn: GetServerSideProps<P>): GetServerSideProps {
 	// High Order function
@@ -25,6 +26,24 @@ export function withSSRAuth<P>(fn: GetServerSideProps<P>): GetServerSideProps {
 			};
 		}
 
-		return await fn(ctx);
+		// Teremos este comportamento para todas as rotas que for utilizar o SSRAuth
+		try {
+			return await fn(ctx);
+		} catch (err) {
+			if (err instanceof AuthTokenError) {
+				// Caso der erro, apaga o token e redireciona para login
+				destroyCookie(ctx, "nextauth.token");
+				destroyCookie(ctx, "nextauth.refreshToken");
+
+				return {
+					redirect: {
+						destination: "/",
+						permanent: false,
+					},
+				};
+			}
+
+			return {} as GetServerSidePropsResult<P>;
+		}
 	};
 }

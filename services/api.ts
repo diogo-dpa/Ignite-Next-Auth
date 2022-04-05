@@ -87,7 +87,7 @@ export function setupAPIClient(ctx: Context = undefined) {
 								failedRequestQueue = [];
 
 								// Variável true ou falso, indicando se está no lado do servidor ou não
-								if (process.browser) {
+								if (typeof window === "undefined") {
 									signOut();
 								}
 							})
@@ -120,7 +120,7 @@ export function setupAPIClient(ctx: Context = undefined) {
 						});
 					});
 				} else {
-					if (process.browser) {
+					if (typeof window === "undefined") {
 						signOut();
 					} else {
 						return Promise.reject(new AuthTokenError());

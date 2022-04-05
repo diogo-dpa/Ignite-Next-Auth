@@ -1,3 +1,4 @@
+import { destroyCookie } from "nookies";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { setupAPIClient } from "../services/api";
@@ -24,19 +25,8 @@ export const getServerSideProps = withSSRAuth(async (ctx) => {
 	// Para chamar o servidor por aqui, utilizando dos cookies, precisa chamar o apiClient e passar o ctx
 	const apiClient = setupAPIClient(ctx);
 
-	try {
-		// refreshToken acontece pelo lado do servidor e não chega a dar tempo para o lado do cliente
-		const response = await apiClient.get("/me");
-	} catch (err) {
-		// Caso der erro, redireciona para login
-
-		return {
-			redirect: {
-				destination: "/",
-				permanent: false,
-			},
-		};
-	}
+	// refreshToken acontece pelo lado do servidor e não chega a dar tempo para o lado do cliente
+	const response = await apiClient.get("/me");
 
 	return {
 		props: {},
