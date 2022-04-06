@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import { Can } from "../components/Can";
 import { AuthContext } from "../context/AuthContext";
 import { useCan } from "../hooks/useCan";
 import { setupAPIClient } from "../services/api";
@@ -7,10 +8,6 @@ import { withSSRAuth } from "../utils/withSSRAuth";
 
 export default function Dashboard() {
 	const { user } = useContext(AuthContext);
-
-	const userCanSeeMetrics = useCan({
-		permissions: ["metrics.list"],
-	});
 
 	useEffect(() => {
 		// em toda chamada a api, ter algum tipo de tratativa
@@ -23,7 +20,9 @@ export default function Dashboard() {
 	return (
 		<>
 			<h1>Ola</h1>
-			{userCanSeeMetrics && <div>Metrics</div>}
+			<Can permissions={["metrics.list"]}>
+				<div>Metrics</div>
+			</Can>
 		</>
 	);
 }
